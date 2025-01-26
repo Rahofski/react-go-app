@@ -5,17 +5,18 @@ import (
 	"fmt"
 	"log"
 	"os"
-    "go.mongodb.org/mongo-driver/bson"
+
 	"github.com/gofiber/fiber/v2"
+	
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-    
 )
 
 type Todo struct {
-	ID        primitive.ObjectID    `json:"id,omitempty" bson:"_id,omitempty"`//омит эмти - если айди ноль - не добавлять
+	ID        primitive.ObjectID    `json:"_id,omitempty" bson:"_id,omitempty"`//омит эмти - если айди ноль - не добавлять
 	Completed bool   `json:"completed"`
 	Body      string `json:"body"`
 }
@@ -27,11 +28,15 @@ var collection *mongo.Collection
 func main() {
 	fmt.Println("Hi world")
 
-
-    err := godotenv.Load(".env")
-    if err != nil{
-        log.Fatal("Error loading .env file:", err)
+    if os.Getenv("ENV") != "production"{
+        err := godotenv.Load(".env")
+        if err != nil{
+            log.Fatal("Error loading .env file:", err)
+        }
     }
+
+
+    
     //подключение к БД
     MONGODB_URI := os.Getenv("MONGODB_URI")
     clientOptions := options.Client().ApplyURI(MONGODB_URI)
@@ -54,6 +59,12 @@ func main() {
 
     app := fiber.New()
 
+    // app.Use(cors.New(cors.Config{
+    //     AllowOrigins: "http://localhost:5173", // Убедитесь, что указали правильный протокол
+    // AllowHeaders: "Origin,Content-Type,Accept",
+    // AllowMethods: "GET, POST, DELETE, PATCH", // Убедитесь, что указываете все необходимые методы
+    // }))
+
     app.Get("/api/todos", getTodos)
     app.Post("/api/todos", createTodo)
     app.Patch("/api/todos/:id", updateTodo)
@@ -62,6 +73,10 @@ func main() {
     port := os.Getenv("PORT")
     if port == "" {
         port = "5000"
+    }
+    //чтение окружения (.env file)
+    if os.Getenv("ENV") == "production"{
+        app.Static("/", "./client/dist")
     }
 
     log.Fatal(app.Listen("0.0.0.0:" + port))
