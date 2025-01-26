@@ -34,8 +34,6 @@ func main() {
             log.Fatal("Error loading .env file:", err)
         }
     }
-
-
     
     //подключение к БД
     MONGODB_URI := os.Getenv("MONGODB_URI")
