@@ -68,7 +68,11 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
 					textDecoration={todo.completed ? "line-through" : "none"}
 				>
 					{todo.body}
-				</Text>
+                </Text>
+                <Text fontSize="sm" color="gray.500">
+                    Created at: {new Date(todo.createdAt).toLocaleString()}
+                </Text>
+
 				{todo.completed && (
 					<Badge ml='1' colorScheme='green'>
 						Done

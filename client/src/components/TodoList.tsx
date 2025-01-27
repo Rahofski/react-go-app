@@ -4,30 +4,38 @@ import { useQuery } from "@tanstack/react-query";
 import { BASE_URL } from "@/App";
 
 export type Todo = {
-    _id: number;
+    _id: number; 
     body: string;
-    completed: boolean
-}
+    completed: boolean;
+    createdAt: string; // Поле для времени создания задачи
+};
 
 const TodoList = () => {
-
-    const { data: todos, isLoading } = useQuery<Todo[]>({
+    const { data: todos, isLoading, error } = useQuery<Todo[]>({
         queryKey: ["todos"],
         queryFn: async () => {
-            try {
-                const res = await fetch(BASE_URL + "/todos")
-                const data = await res.json()
-                if (!res.ok) {
-                    throw new Error (data.message || "Smthng went wrong")
-                }
-                return data || []
-            } catch (error) {
-                console.log(error)
+            const res = await fetch(BASE_URL + "/todos");
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || "Something went wrong");
             }
-        }
-    })
-	return (
-		<>
+            return data || [];
+        },
+    });
+
+    if (error) {
+        console.error(error);
+        return (
+            <Flex justifyContent="center" alignItems="center" height="100vh">
+                <Text fontSize="xl" color="red.500">
+                    Failed to load tasks. Please try again later.
+                </Text>
+            </Flex>
+        );
+    }
+
+    return (
+        <>
             <Text
                 fontSize={"4xl"}
                 textTransform={"uppercase"}
@@ -36,30 +44,32 @@ const TodoList = () => {
                 my={2}
                 color={"orange"}
             >
-				Today's Tasks
-			</Text>
-			{isLoading && (
-				<Flex justifyContent={"center"} my={4}>
-					<Spinner size={"xl"} />
-				</Flex>
-			)}
-			{!isLoading && todos?.length === 0 && (
-				<Stack alignItems={"center"} gap='3'>
-					<Text fontSize={"xl"} textAlign={"center"} color={"gray.500"}>
-						All tasks completed! 🤞
-					</Text>
-					<img src='/go.png' alt='Go logo' width={70} height={70} />
-				</Stack>
-			)}
-			<Stack gap={3}>
-				{todos?.map((todo) => (
+                Today's Tasks
+            </Text>
+            {isLoading && (
+                <Flex justifyContent={"center"} my={4}>
+                    <Spinner size={"xl"} />
+                </Flex>
+            )}
+            {!isLoading && todos?.length === 0 && (
+                <Stack alignItems={"center"} gap="3">
+                    <Text fontSize={"xl"} textAlign={"center"} color={"gray.500"}>
+                        All tasks completed! 🤞
+                    </Text>
+                    <img src="/go.png" alt="Go logo" width={70} height={70} />
+                </Stack>
+            )}
+            <Stack gap={3}>
+                {todos?.map((todo) => (
                     <TodoItem key={todo._id} todo={todo} />
-				))}
-			</Stack>
-		</>
-	);
+                ))}
+            </Stack>
+        </>
+    );
 };
+
 export default TodoList;
+
 
 // STARTER CODE:
 

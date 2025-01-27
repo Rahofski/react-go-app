@@ -32,6 +32,7 @@ const TodoForm = () => {
                 console.log(error)
             }
         },
+        //обновление всех записей
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey:["todos"]})
         },
