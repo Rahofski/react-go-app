@@ -44,7 +44,7 @@ const TodoList = () => {
                 my={2}
                 color={"orange"}
             >
-                Today's Tasks
+                TODAY'S TASKS
             </Text>
             {isLoading && (
                 <Flex justifyContent={"center"} my={4}>

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	//"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -56,11 +56,15 @@ func main() {
 
 	app := fiber.New()
 
-    //   app.Use(cors.New(cors.Config{
-    //      AllowOrigins: "http://localhost:5173", // Убедитесь, что указали правильный протокол
-    //  AllowHeaders: "Origin,Content-Type,Accept",
-    //  AllowMethods: "GET, POST, DELETE, PATCH", // Убедитесь, что указываете все необходимые методы
-    //  }))
+      
+
+	if os.Getenv("ENV") != "production" {
+		app.Use(cors.New(cors.Config{
+			AllowOrigins: "http://localhost:5173", // Убедитесь, что указали правильный протокол
+			AllowHeaders: "Origin,Content-Type,Accept",
+			AllowMethods: "GET, POST, DELETE, PATCH", // Убедитесь, что указываете все необходимые методы
+		}))
+	}
 
 	app.Get("/api/todos", getTodos)
 	app.Post("/api/todos", createTodo)

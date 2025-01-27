@@ -69,20 +69,26 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
 				>
 					{todo.body}
                 </Text>
-                <Text fontSize="sm" color="gray.500">
-                    Created at: {new Date(todo.createdAt).toLocaleString()}
-                </Text>
+                <Flex
+                    gap={2}
+                    alignItems={"center"}
+                    minWidth="220px"
+                >
+                    <Text fontSize="sm" color="gray.500">
+                         {new Date(todo.createdAt).toLocaleString()}
+                    </Text>
 
-				{todo.completed && (
-					<Badge ml='1' colorScheme='green'>
-						Done
-					</Badge>
-				)}
-				{!todo.completed && (
-					<Badge ml='1' colorScheme='yellow'>
-						In Progress
-					</Badge>
-				)}
+                    {todo.completed && (
+                        <Badge ml='1' colorScheme='green'>
+                            Done
+                        </Badge>
+                    )}
+                    {!todo.completed && (
+                        <Badge ml='1' colorScheme='yellow'>
+                            In Progress
+                        </Badge>
+                        )}
+                </Flex>
 			</Flex>
 			<Flex gap={2} alignItems={"center"}>
                 <Box color={"green.500"} cursor={"pointer"} onClick={() => updateTodo()}>
