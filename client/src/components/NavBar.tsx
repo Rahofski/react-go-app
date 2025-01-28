@@ -1,11 +1,8 @@
 import { Box, Flex, Button, Text, Container } from "@chakra-ui/react";
-import {
-	useColorMode,
-	useColorModeValue,
-  } from "@/components/ui/color-mode"
+import { useColorMode, useColorModeValue } from "@/components/ui/color-mode";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
-
+import { Link } from "react-router-dom";
 export default function Navbar() {
 	const { colorMode, toggleColorMode } = useColorMode();
 
@@ -36,6 +33,14 @@ export default function Navbar() {
 						<Button onClick={toggleColorMode}>
 							{colorMode === "light" ? <IoMoon /> : <LuSun size={20} />}
 						</Button>
+						{/* Register Button */}
+						<Link to="/register">
+              				<Button variant="solid" colorScheme="teal">Register</Button>
+            			</Link>
+						<Link to="/login">
+              				<Button variant="outline" colorScheme="teal">Login</Button>
+            			</Link>
+            			
 					</Flex>
 				</Flex>
 			</Box>
