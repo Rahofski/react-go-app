@@ -23,7 +23,7 @@ type Todo struct {
 	Completed bool               `json:"completed"`
 	Body      string             `json:"body"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"` // Поле для времени создания
-	UserID    primitive.ObjectID `json:"userId,omitempty" bson:"userId,omitempty"` // Ссылка на пользователя
+	UserID    primitive.ObjectID `json:"userId" bson:"userId"` // Ссылка на пользователя
 }
 
 type User struct {
@@ -156,17 +156,55 @@ func getTodos(c *fiber.Ctx) error {
 
 func createTodo(c *fiber.Ctx) error {
 	todo := new(Todo)
+	// Извлекаем данные из тела запроса
 	if err := c.BodyParser(todo); err != nil {
 		return err
 	}
 
+	// Проверяем, что тело задачи не пустое
 	if todo.Body == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Todo body cannot be empty"})
 	}
 
+	// Извлекаем токен из заголовка Authorization
+	tokenString := c.Get("Authorization")
+	if tokenString == "" {
+		return c.Status(401).JSON(fiber.Map{"error": "No token provided"})
+	}
+
+	// Убираем префикс "Bearer " из токена
+	tokenString = tokenString[7:]
+
+	// Проверяем токен
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Проверяем алгоритм токена
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method %v", token.Header["alg"])
+		}
+		// Возвращаем ключ для подписи
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+
+	if err != nil || !token.Valid {
+		return c.Status(401).JSON(fiber.Map{"error": "Invalid or expired token"})
+	}
+
+	// Получаем userID из токена
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || claims["userID"] == nil {
+		return c.Status(401).JSON(fiber.Map{"error": "User not found"})
+	}
+	userID, err := primitive.ObjectIDFromHex(claims["userID"].(string))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid user ID"})
+	}
+
+	// Присваиваем userId задачи значением из токена
+	todo.UserID = userID
 	todo.ID = primitive.NewObjectID()
 	todo.CreatedAt = time.Now() // Устанавливаем текущее время
 
+	// Вставляем задачу в базу данных
 	insertResult, err := collection.InsertOne(context.Background(), todo)
 	if err != nil {
 		return err
