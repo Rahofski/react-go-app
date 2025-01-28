@@ -21,7 +21,7 @@ const TodoList = () => {
         queryKey: ["todos"],
         queryFn: async () => {
             if (!token) {
-                throw new Error("No token provided"); // Проверяем наличие токена
+                throw new Error("No tok provided"); // Проверяем наличие токена
             }
 
             const res = await fetch(BASE_URL + "/todos", {

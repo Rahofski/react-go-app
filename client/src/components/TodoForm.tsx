@@ -25,7 +25,7 @@ const TodoForm = () => {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`, // Добавляем токен в заголовок
+                        Authorization: `Bearer ${token}`, // Добавляем токен в заголовок
                     },
                     body: JSON.stringify({ body: newTodo }),
                 });
