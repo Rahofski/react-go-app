@@ -31,6 +31,7 @@ type User struct {
 	Name     string             `json:"name"`
 	Email    string             `json:"email"`
 	Password string             `json:"password"` // Хэш пароля
+	//JwtSecret string            `json:"jwtSecret"` // Новый уникальный JWT секрет
 }
 
 var collection *mongo.Collection
