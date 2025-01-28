@@ -23,7 +23,7 @@ type Todo struct {
 	Completed bool               `json:"completed"`
 	Body      string             `json:"body"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"` // Поле для времени создания
-	UserID    primitive.ObjectID `json:"userId" bson:"userId"` // Ссылка на пользователя
+	UserID    primitive.ObjectID `json:"userId,omitempty" bson:"userId, omitempty"` // Ссылка на пользователя
 }
 
 type User struct {
