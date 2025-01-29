@@ -1,55 +1,70 @@
 import { useState } from "react";
-import { Button, Input, Stack, Text} from "@chakra-ui/react";
-import { Link } from "react-router-dom";
-import { BASE_URL } from "@/App";
-//import { useQueryClient } from "@tanstack/react-query";
-//import { useMutation,  } from "@tanstack/react-query";
+import { Button, Input, Stack, Text } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom"; // Импорт useNavigate
 
+import { BASE_URL } from "@/App";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  
-  //const queryClient = useQueryClient();
+  const [successMessage, setSuccessMessage] = useState(""); // Состояние для успеха
+  const [errorMessage, setErrorMessage] = useState(""); // Состояние для ошибок
+  const navigate = useNavigate(); // Инициализация useNavigate
 
-    const handleRegister = async () => {
-        try {
-            const response = await fetch(BASE_URL + "/register/reg", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    name: username,
-                    password,
-                }),
-            });
+  const handleRegister = async () => {
+    try {
+      const response = await fetch(BASE_URL + "/register/reg", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          name: username,
+          password,
+        }),
+      });
 
-            if (!response.ok) {
-                // Если сервер вернул ошибку
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Something went wrong");
-            }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Something went wrong");
+      }
 
-
-            setEmail("");
-            setUsername("");
-            setPassword("");
-        } catch (error: any) {
-            // Обрабатываем ошибки
-            console.log(error)
-        }
-    };
-
-    
+      // Если регистрация успешна
+      setSuccessMessage("Registration succeeded!");
+      setErrorMessage(""); // Сбрасываем ошибку
+      setEmail("");
+      setUsername("");
+      setPassword("");
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (error: any) {
+      // Обрабатываем ошибки
+      setErrorMessage(error.message || "Something went wrong");
+      setSuccessMessage(""); // Сбрасываем сообщение об успехе
+    }
+  };
 
   return (
     <Stack gap={4} maxW="400px" mx="auto" mt="20">
       <Text fontSize="2xl" fontWeight="bold">
         Register
       </Text>
+
+      {successMessage && ( // Показать сообщение об успехе
+        <Text fontSize="lg" color="green.500" fontWeight="semibold">
+          {successMessage}, don't forget to login!
+        </Text>
+      )}
+
+      {errorMessage && ( // Показать сообщение об ошибке
+        <Text fontSize="lg" color="red.500" fontWeight="semibold">
+          {errorMessage}
+        </Text>
+      )}
+
       <Input
         placeholder="Email"
         size="lg"

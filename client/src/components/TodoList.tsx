@@ -57,13 +57,7 @@ const TodoList = () => {
         );
     }
 
-    if (isLoading) {
-        return (
-            <Flex justifyContent="center" alignItems="center" height="100vh">
-                <Text fontSize="xl">Loading...</Text>
-            </Flex>
-        );
-    }
+    
 
     return (
         <>
